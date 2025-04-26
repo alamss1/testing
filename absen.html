@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Absensi Pegawai</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <h2>Absen Lapangan</h2>
+  <p><b>ID:</b> <span id="idPegawai"></span></p>
+  <p><b>Nama:</b> <span id="namaPegawai"></span></p>
+  <p><b>Status:</b> <span id="status">Menunggu...</span></p>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const nama = params.get('nama');
+    const sheetUrl = "https://script.google.com/macros/s/AKfycbwj-VpL7DS0yXoFb7O0PwtKPO9PKnq8zxcuOOvK5oRIqR-Ivt-CY0jfhqsGQUDrjf_B/exec";
+
+    document.getElementById("idPegawai").textContent = id;
+    document.getElementById("namaPegawai").textContent = nama;
+
+    function kirimAbsen(lat, long) {
+      const data = {
+        id: id,
+        nama: nama,
+        latitude: lat,
+        longitude: long,
+        clientTime: new Date().toLocaleString()
+      };
+
+      fetch(sheetUrl, {
+        method: "POST",
+        body: JSON.stringify(data)
+      })
+      .then(r => r.text())
+      .then(msg => {
+        document.getElementById("status").textContent = "Absen berhasil!";
+      })
+      .catch(err => {
+        document.getElementById("status").textContent = "Gagal kirim data.";
+      });
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      pos => kirimAbsen(pos.coords.latitude, pos.coords.longitude),
+      err => {
+        document.getElementById("status").textContent = "Gagal ambil lokasi.";
+      }
+    );
+  </script>
+</body>
+</html>
