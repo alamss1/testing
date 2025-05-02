@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Absensi Pegawai</title>
+</head>
+<body>
+  <h2>Form Absensi</h2>
+  <form id="absenForm">
+    <input type="text" name="nama" placeholder="Nama" required><br><br>
+    <select name="shift" required>
+      <option value="">Pilih Shift</option>
+      <option value="Pagi">Pagi</option>
+      <option value="Malam">Malam</option>
+    </select><br><br>
+    <button type="submit" name="aksi" value="masuk">Absen Masuk</button>
+    <button type="submit" name="aksi" value="keluar">Absen Keluar</button>
+  </form>
+
+  <script>
+  
+	const scriptURL = "https://script.google.com/macros/s/AKfycbzKhPOiAv9lS6ZCtkGaZWhjK5SYCcw518bA6GbpkKrdWzImIq5JrknnytjseDYUSZwW/exec";
+
+    document.querySelectorAll('button').forEach(button => {
+      button.addEventListener('click', function (e) {
+        e.preventDefault();
+        const form = document.getElementById("absenForm");
+        const formData = new FormData(form);
+        const data = {
+          nama: formData.get("nama"),
+          shift: formData.get("shift"),
+          aksi: this.value
+        };
+
+        fetch(scriptURL, {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }).then(response => {
+          if (response.ok) {
+            alert("Absen berhasil!");
+            form.reset();
+          }
+        }).catch(error => {
+          alert("Gagal mengirim data");
+        });
+      });
+    });
+  </script>
+</body>
+</html>
